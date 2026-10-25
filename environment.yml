@@ -1,0 +1,16 @@
+# Conda environment for the ruliobiology repository.
+#   conda env create -f environment.yml
+#   conda activate ruliobiology
+#   pip install -e .
+name: ruliobiology
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - numpy
+  - scipy          # used only by the 2-D test suite (reference Game of Life)
+  - matplotlib
+  - numba          # optional accelerator (5-10x); the code falls back to numpy without it
+  - streamlit      # the GUI:  streamlit run app.py
+  - pytest
+  - pip

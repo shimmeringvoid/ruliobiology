@@ -1,0 +1,26 @@
+# ---- Python ----------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# ---- generated output -------------------------------------------------
+figures/
+figures1d/
+figures2d/
+*.html
+!docs/**/*.html
+.streamlit/
+
+# ---- OS / editor cruft ----------------------------------------------
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/

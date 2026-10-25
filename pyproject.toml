@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ruliobiology"
+version = "0.1.0"
+description = "Wolfram's ruliobiology model of adaptive evolution in 1-D and 2-D cellular automata, with a 3-D viewer and a GUI"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Rafael Espericueta" }]
+license = "MIT"
+keywords = ["cellular automata", "evolution", "ruliology", "ruliobiology", "complexity", "Wolfram"]
+dependencies = [
+    "numpy>=1.24",
+    "matplotlib>=3.6",
+]
+
+[project.optional-dependencies]
+fast = ["numba>=0.58"]
+gui = ["streamlit>=1.30"]
+dev = ["pytest>=7", "scipy>=1.10", "numba>=0.58"]
+
+[tool.setuptools]
+packages = ["ruliobiology"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
