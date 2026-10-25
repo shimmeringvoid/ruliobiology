@@ -146,8 +146,10 @@ Every cell is a small sphere at the centre of its lattice cube (or a cube, or
 a shaded dot sprite — the fastest for very large volumes), with a size slider,
 so shrinking the spheres opens gaps you can see through. Drag to rotate, wheel
 or pinch to zoom. To look inside: a per-colour opacity slider and visibility
-toggle, a cut plane along x or y, a time window, a time-stretch slider, and a
-"surface cells only" mode. Two lattice overlays help to read 3-D structure:
+toggle, a cut plane along x or y, a time window, a "surface cells only" mode,
+and two stretch sliders: long-lived organisms make tall, thin volumes, so
+*stretch space* spreads the x and y axes out and *stretch time* compresses the
+time axis, giving any aspect ratio. Two lattice overlays help to read 3-D structure:
 *empty sites as beads* draws the empty lattice sites faintly, so the organism's
 cells sit as jewels in an Indra's net, and *world lines* join each cell to its
 successor in time while its colour persists, so columns and sheets of

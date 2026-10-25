@@ -18,6 +18,9 @@ look inside the organism in whatever way helps.  Two lattice overlays help
 to read the 3-D structure: the empty lattice sites can be drawn as faint
 beads (an Indra's net the organism's cells are the jewels of), and "world
 lines" join each cell to its successor in time while its colour persists.
+Long-lived organisms make tall, thin volumes: the "stretch space" slider
+spreads the two spatial axes out and "stretch time" compresses the other,
+so any aspect ratio can be had.
 
 Any (T, H, W) uint8 volume with 0 = empty works, e.g. an age-coloured
 Game of Life history from ``cadyn.ca2d``.
@@ -193,6 +196,8 @@ _BODY = """<div id="stage"></div>
     <div class="row wide"><input type="range" id="tmax" min="0" value="0"><span class="val" id="tmaxVal">0</span></div>
     <div class="row wide"><span>Stretch time</span><span class="val" id="stretchVal">1.0×</span></div>
     <input type="range" id="stretch" min="25" max="400" value="100">
+    <div class="row wide"><span>Stretch space (x, y)</span><span class="val" id="sxVal">1.0×</span></div>
+    <input type="range" id="sx" min="100" max="800" value="100">
   </div>
   <div class="group">
     <div class="row two">
@@ -257,7 +262,7 @@ _SCRIPT = r"""
   const sun2 = new THREE.DirectionalLight(0xffffff, 0.3); sun2.position.set(-4, -2, -3); scene.add(sun2);
 
   const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const state = { stretch: 1, shell: D.cells > 150000 && nShell < D.cells, cutAxis: 'none', cut: 0.5,
+  const state = { stretch: 1, sx: 1, shell: D.cells > 150000 && nShell < D.cells, cutAxis: 'none', cut: 0.5,
                   tmin: 0, tmax: T - 1, spin: !reduced, shape: D.cells > 100000 ? 'dot' : 'sphere', size: 0.8,
                   net: false, netSize: 0.14, netOp: 0.14, lines: false, lineOp: 0.6,
                   opacity: new Array(D.k).fill(1), visible: new Array(D.k).fill(true) };
@@ -272,12 +277,12 @@ _SCRIPT = r"""
 
   function worldY(t) { return -t * state.stretch; }
   function placeBox() {
-    box.scale.set(W, Math.max(T - 1, 0) * state.stretch + 1, H);
+    box.scale.set(W * state.sx, Math.max(T - 1, 0) * state.stretch + 1, H * state.sx);
     box.position.set(0, -(T - 1) * state.stretch / 2, 0);
   }
   function cellXYZ(i) {
     const t = Math.floor(i / HW), r = i % HW;
-    return [r % W - (W - 1) / 2, worldY(t), Math.floor(r / W) - (H - 1) / 2];
+    return [(r % W - (W - 1) / 2) * state.sx, worldY(t), (Math.floor(r / W) - (H - 1) / 2) * state.sx];
   }
   function setMatrices(mesh, list) {
     const m = new THREE.Matrix4();
@@ -385,7 +390,7 @@ _SCRIPT = r"""
     if (state.cutAxis === 'none') { planes.cut.constant = 1e9; }
     else {
       const n = state.cutAxis === 'x' ? W : H;
-      const at = -n / 2 + state.cut * n;
+      const at = (-n / 2 + state.cut * n) * state.sx;
       planes.cut.normal.set(state.cutAxis === 'x' ? -1 : 0, 0, state.cutAxis === 'y' ? -1 : 0);
       planes.cut.constant = at;
     }
@@ -403,7 +408,7 @@ _SCRIPT = r"""
   const target = new THREE.Vector3(0, -(T - 1) / 2, 0);
   const home = { theta: 0.7, phi: 1.15 };
   let theta = home.theta, phi = home.phi, radius = 1;
-  function fit() { radius = 1.5 * Math.max(W, H, (T - 1) * state.stretch + 1, 4); }
+  function fit() { radius = 1.5 * Math.max(W * state.sx, H * state.sx, (T - 1) * state.stretch + 1, 4); }
   function updateCamera() {
     camera.position.set(target.x + radius * Math.sin(phi) * Math.sin(theta),
                         target.y + radius * Math.cos(phi),
@@ -479,6 +484,7 @@ _SCRIPT = r"""
   tmin.addEventListener('input', e => { state.tmin = +e.target.value; if (state.tmin > state.tmax) { state.tmax = state.tmin; tmax.value = state.tmax; $('tmaxVal').textContent = state.tmax; } $('tminVal').textContent = state.tmin; applyPlanes(); });
   tmax.addEventListener('input', e => { state.tmax = +e.target.value; if (state.tmax < state.tmin) { state.tmin = state.tmax; tmin.value = state.tmin; $('tminVal').textContent = state.tmin; } $('tmaxVal').textContent = state.tmax; applyPlanes(); });
   $('stretch').addEventListener('input', e => { state.stretch = e.target.value / 100; $('stretchVal').textContent = state.stretch.toFixed(2).replace(/0$/, '') + '×'; restretch(); });
+  $('sx').addEventListener('input', e => { state.sx = e.target.value / 100; $('sxVal').textContent = state.sx.toFixed(1) + '×'; restretch(); });
   const spinBox = $('spin'); spinBox.checked = state.spin;
   spinBox.addEventListener('change', e => { state.spin = e.target.checked; dirty = true; });
   $('reset').addEventListener('click', () => { theta = home.theta; phi = home.phi; fit(); dirty = true; });
